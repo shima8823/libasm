@@ -11,8 +11,8 @@ ft_strcmp:	;s1: rdi, s2: rsi
 	cmp	al, cl
 	jne	.done
 	
-	cmp	al, 0
-	je	.done
+	test	al, al
+	jz	.done
 
 	inc rdi
 	inc rsi
@@ -20,5 +20,5 @@ ft_strcmp:	;s1: rdi, s2: rsi
 
 .done:
 	sub		al, cl
-	movsx	rax, al
+	movsx	eax, al
 	ret
