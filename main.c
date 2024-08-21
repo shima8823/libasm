@@ -67,7 +67,7 @@ void compare_reads(const char *test_name, int fd, size_t count) {
 	printf("Test: %s\n", test_name);
 	printf("Standard read: bytes=%zd, errno=%d, content='%.20s%s'\n", 
 		   read_std, errno_std, buf_std, (strlen(buf_std) > 20 ? "..." : ""));
-	printf("ft_read:       bytes=%zd, errno=%d, content='%.20s%s'\n", 
+	printf("ft_read:	   bytes=%zd, errno=%d, content='%.20s%s'\n", 
 		   read_ft, errno_ft, buf_ft, (strlen(buf_ft) > 20 ? "..." : ""));
 		
 	if (read_std == read_ft && errno_std == errno_ft && (read_std <= 0 || memcmp(buf_std, buf_ft, read_std) == 0)) {
@@ -100,10 +100,52 @@ void test_read() {
 	test_error_cases();	
 }
 
+void compare_strdup(const char *test_str) {
+	char *std_result, *ft_result;
+
+	// std
+	if (test_str == NULL)
+		std_result = NULL;
+	else
+		std_result = strdup(test_str);
+		
+	// ft
+	ft_result = ft_strdup(test_str);
+		
+	// test
+	printf("Test string: \"%s\"\n", test_str);
+	printf("Standard strdup result: \"%s\"\n", std_result);
+	printf("ft_strdup result:	   \"%s\"\n", ft_result);
+		
+	if (std_result == NULL && ft_result == NULL) {
+		printf("Both functions returned NULL\n");
+	} else if (std_result == NULL || ft_result == NULL) {
+		printf("FAIL: One function returned NULL, the other didn't\n");
+	} else if (strcmp(std_result, ft_result) == 0) {
+		printf("PASS: Results match\n");
+	} else {
+		printf("FAIL: Results don't match\n");
+	}
+	free(std_result);
+	free(ft_result);
+	printf("\n");
+}
+
+void test_strdup() {
+	compare_strdup("Hello, World!");
+	compare_strdup("");
+	compare_strdup("A");
+	compare_strdup("This is a longer string to test memory allocation");
+	compare_strdup("Special characters: !@#$%^&*()_+");
+	compare_strdup("Unicode characters: こんにちは世界");
+	compare_strdup(NULL);
+}
+
 int main() {
 	test_strlen();
 	test_strcpy();
 	test_strcmp();
 	test_write();
 	test_read();
+	test_strdup();
 }
