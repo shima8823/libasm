@@ -2,45 +2,99 @@
 
 void test_strlen() {
 	char *buf = "42tokyo\n";
-	printf("%zu\n", strlen(buf));
-	printf("%zu\n", ft_strlen(buf));
+
+	printf("%stest_stren%s\n", MAGENTA, WHITE);
+
+	printf("TEST: buf = 42tokyo\\n\n");
+	if (strlen(buf) == ft_strlen(buf)) {
+		printf("%sPASS\n", GREEN);
+	} else {
+		printf("%sFAIL\n", RED);
+	}
+	printf("%s\n", WHITE);
 }
 
 void test_strcpy() {
-	char dest[10];
-	char *src = "42tokyo\n";
-	printf("%s", strcpy(dest, src));
-	printf("%s", ft_strcpy(dest, src));
+	char src[] = "42tokyo";
+	char dest1[10];
+	char dest2[10];
+
+	printf("%stest_strcpy%s\n", MAGENTA, WHITE);
+
+	printf("TEST: src = 42tokyo\n");
+	strcpy(dest1, src);
+	ft_strcpy(dest2, src);
+
+	if (strcmp(dest1, dest2) == 0) {
+		printf("%sPASS\n", GREEN);
+	} else {
+		printf("%sFAIL\n", RED);
+	}
+	printf("%s\n", WHITE);
 }
 
 void test_strcmp() {
 	char *s1 = "42tokyo\n";
 	char *s2 = "42paris\n";
-	printf("%d\n", strcmp(s1, s2));
-	printf("%d\n", ft_strcmp(s1, s2));
 
-	printf("%d\n", strcmp(s1, s1));
-	printf("%d\n", ft_strcmp(s1, s1));
+	printf("%stest_strcmp%s\n", MAGENTA, WHITE);
+
+	printf("TEST: s1 = 42tokyo, s2 = 42paris\n");
+	if (strcmp(s1, s2) == ft_strcmp(s1, s2)) {
+		printf("%sPASS\n", GREEN);
+	} else {
+		printf("%sFAIL\n", RED);
+	}
+	printf("%s\n", WHITE);
+
+	printf("TEST: s1 = 42tokyo, s2 = s1\n");
+	if (strcmp(s1, s1) == ft_strcmp(s1, s1)) {
+		printf("%sPASS\n", GREEN);
+	} else {
+		printf("%sFAIL\n", RED);
+	}
+	printf("%s\n", WHITE);
 }
 
 void test_write() {
 	char	*buf = "42tokyo\n";
 	int		invalid_fd = 10;
+	ssize_t	r1, r2;
+	int		e1, e2;
+
+	printf("%stest_write%s\n", MAGENTA, WHITE);
 	
+	printf("TEST: standard: buf = 42tokyo\\n\n");
 	errno = 0;
-	printf("%zd\n", write(STDOUT_FILENO, buf, strlen(buf)));
-	errno = 0;
-	printf("%zd\n", ft_write(STDOUT_FILENO, buf, strlen(buf)));
+	r1 = write(STDOUT_FILENO, buf, strlen(buf));
+	e1 = errno;
 
 	errno = 0;
-	printf("%zd\n", write(invalid_fd, buf, strlen(buf)));
-	printf("%d\n", errno);
-	printf("%s\n", strerror(errno));
+	r2 = ft_write(STDOUT_FILENO, buf, strlen(buf));
+	e2 = errno;
+
+	if (r1 == r2 && e1 == e2) {
+		printf("%sPASS\n", GREEN);
+	} else {
+		printf("%sFAIL\n", RED);
+	}
+	printf("%s\n", WHITE);
+
+	printf("TEST: invalidFD: buf = 42tokyo\\n\n");
 	errno = 0;
-	printf("%zd\n", ft_write(invalid_fd, buf, strlen(buf)));
-	printf("%d\n", errno);
-	printf("%s\n", strerror(errno));
-	
+	r1 = write(invalid_fd, buf, strlen(buf));
+	e1 = errno;
+
+	errno = 0;
+	r2 = ft_write(invalid_fd, buf, strlen(buf));
+	e2 = errno;
+
+	if (r1 == r2 && e1 == e2) {
+		printf("%sPASS\n", GREEN);
+	} else {
+		printf("%sFAIL\n", RED);
+	}
+	printf("%s\n", WHITE);
 }
 
 void compare_reads(const char *test_name, int fd, size_t count) {
@@ -65,39 +119,32 @@ void compare_reads(const char *test_name, int fd, size_t count) {
 
 	// test
 	printf("Test: %s\n", test_name);
-	printf("Standard read: bytes=%zd, errno=%d, content='%.20s%s'\n", 
-		   read_std, errno_std, buf_std, (strlen(buf_std) > 20 ? "..." : ""));
-	printf("ft_read:	   bytes=%zd, errno=%d, content='%.20s%s'\n", 
-		   read_ft, errno_ft, buf_ft, (strlen(buf_ft) > 20 ? "..." : ""));
+	printf("Standard read: bytes=%zd, errno=%d, content='%.20s%s'\n",
+			read_std, errno_std, buf_std, (strlen(buf_std) > 20 ? "..." : ""));
+	printf("ft_read:       bytes=%zd, errno=%d, content='%.20s%s'\n",
+			read_ft, errno_ft, buf_ft, (strlen(buf_ft) > 20 ? "..." : ""));
 		
 	if (read_std == read_ft && errno_std == errno_ft && (read_std <= 0 || memcmp(buf_std, buf_ft, read_std) == 0)) {
-		printf("Result: PASS\n");
+		printf("%sPASS\n", GREEN);
 	} else {
-		printf("Result: FAIL\n\n");
+		printf("%sFAIL\n", RED);
 	}
+	printf("%s\n", WHITE);
 }
 
-void test_file_read(const char *filename) {
-	int fd = open(filename, O_RDONLY);
+void test_read() {
+	printf("%stest_write%s\n", MAGENTA, WHITE);
+
+	int fd = open("test.txt", O_RDONLY);
 	if (fd == -1) {
 		perror("open failed");
 		return;
 	}
 
-	compare_reads("File read", fd, BUFFER_SIZE);
+	compare_reads("standard file read", fd, BUFFER_SIZE);
 	close(fd);
-}
-
-void test_error_cases() {
 	compare_reads("Invalid file descriptor", -1, BUFFER_SIZE);
 	compare_reads("NULL buffer", STDIN_FILENO, 0);
-}
-
-
-void test_read() {
-	printf("Comparing standard read with ft_read:\n\n");
-	test_file_read("test.txt");
-	test_error_cases();	
 }
 
 void compare_strdup(const char *test_str) {
@@ -113,31 +160,45 @@ void compare_strdup(const char *test_str) {
 	ft_result = ft_strdup(test_str);
 		
 	// test
-	printf("Test string: \"%s\"\n", test_str);
-	printf("Standard strdup result: \"%s\"\n", std_result);
-	printf("ft_strdup result:	   \"%s\"\n", ft_result);
-		
+	printf("Test string: \"%.20s%s\"\n", test_str, (test_str == NULL ? "" : (strlen(test_str) > 20 ? "..." : "")));
+	printf("Standard strdup result: \"%.20s%s\"\n", std_result, (test_str == NULL ? "" : (strlen(std_result) > 20 ? "..." : "")));
+	printf("ft_strdup result:       \"%.20s%s\"\n", ft_result, (test_str == NULL ? "" : (strlen(ft_result) > 20 ? "..." : "")));
+
 	if (std_result == NULL && ft_result == NULL) {
-		printf("Both functions returned NULL\n");
+		printf("%sPASS: Both functions returned NULL\n", GREEN);
 	} else if (std_result == NULL || ft_result == NULL) {
-		printf("FAIL: One function returned NULL, the other didn't\n");
+		printf("%sFAIL: One function returned NULL, the other didn't\n", RED);
 	} else if (strcmp(std_result, ft_result) == 0) {
-		printf("PASS: Results match\n");
+		printf("%sPASS: Results match\n", GREEN);
 	} else {
-		printf("FAIL: Results don't match\n");
+		printf("%sFAIL: Results don't match\n", RED);
 	}
 	free(std_result);
 	free(ft_result);
-	printf("\n");
+	printf("%s\n", WHITE);
 }
 
 void test_strdup() {
+	char buf[BUFFER_SIZE];
+	
+	printf("%stest_strdup%s\n", MAGENTA, WHITE);
+
 	compare_strdup("Hello, World!");
 	compare_strdup("");
 	compare_strdup("A");
-	compare_strdup("This is a longer string to test memory allocation");
-	compare_strdup("Special characters: !@#$%^&*()_+");
-	compare_strdup("Unicode characters: こんにちは世界");
+	int fd = open("test.txt", O_RDONLY);
+	if (fd == -1) {
+		perror("open failed");
+		return;
+	}
+	if (read(fd, buf, BUFFER_SIZE) == -1) {
+		perror("read failed");
+		return;
+	}
+	compare_strdup(buf);
+	close(fd);
+	compare_strdup("Special: !@#$%^&*()_+");
+	compare_strdup("Unicode: こんにちは世界");
 	compare_strdup(NULL);
 }
 

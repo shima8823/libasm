@@ -10,6 +10,11 @@
 
 #define BUFFER_SIZE 1024
 
+#define MAGENTA "\x1b[35m"
+#define RED "\x1b[31m"
+#define GREEN "\x1b[32m"
+#define WHITE "\x1b[0m"
+
 size_t	ft_strlen(const char *s);
 char	*ft_strcpy(char * dst, const char * src);
 int		ft_strcmp(const char *s1, const char *s2);
